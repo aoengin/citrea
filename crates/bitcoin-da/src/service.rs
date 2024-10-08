@@ -980,6 +980,12 @@ impl From<TxidWrapper> for [u8; 32] {
     }
 }
 
+/// This function splits Proof based on its size. It is either:
+/// 1: compress(borsh(DaDataLightClient::Complete(Proof)))
+/// 2:
+///   let compressed = compress(borsh(Proof))
+///   let chunks = compressed.chunks(MAX_TXBODY_SIZE)
+///   [borsh(DaDataLightClient::Chunk(chunk)) for chunk in chunks]
 fn split_proof(zk_proof: Proof) -> RawLightClientData {
     let original_blob = borsh::to_vec(&zk_proof).expect("zk::Proof serialize must not fail");
     let original_compressed = compress_blob(&original_blob);
